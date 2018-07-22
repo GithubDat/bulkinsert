@@ -7,7 +7,7 @@ var server = require('http').Server(app);
 
 app.use(fileUpload());
 
-server.listen(8088);
+server.listen(8089);
 
 
 // var connectionString = mongoUriBuilder({
@@ -26,8 +26,9 @@ server.listen(8088);
 // 	}
 // });
 // demodemo:mmjnRIMPrrKlWQg3qEbgb9YiXTkn5MX73x2jlogDdRosPXWbb2bxU92CGWfkCcN4ZSFx2jmx3jpnzhngg1Zz8Q%3D%3D@demodemo.documents.azure.com:10255/demodemo?ssl=true', ['vouchers']
+// var db=mongoose.connect('mongodb://localhost/csvimport');
 
-var db= mongoose.connect('mongodb://demodemo:mmjnRIMPrrKlWQg3qEbgb9YiXTkn5MX73x2jlogDdRosPXWbb2bxU92CGWfkCcN4ZSFx2jmx3jpnzhngg1Zz8Q==@demodemo.documents.azure.com:10255/demodemo?ssl=true&replicaSet=globaldb');
+var db= mongoose.connect('mongodb://demodemo:mmjnRIMPrrKlWQg3qEbgb9YiXTkn5MX73x2jlogDdRosPXWbb2bxU92CGWfkCcN4ZSFx2jmx3jpnzhngg1Zz8Q==@demodemo.documents.azure.com:10255/demodemo?ssl=true&replicaSet=globaldb', ['coupons']);
 
 app.get('/', function (req, res) {
   res.sendFile(__dirname + '/index.html');

@@ -2,15 +2,24 @@ var csv = require('fast-csv');
 var mongoose = require('mongoose');
 var Voucher = require('./voucher');
 
+const EventEmitter = require('events');
+const emitter = new EventEmitter();
+
+emitter.on('a', function(arg) {
+	console.log('ev emitted', arg.length);
+	Voucher.create(arg, function(err, documents){
+		if (err) throw err;
+	});
+	});
+
 exports.post = function (req, res) {
-	if (!req.
-		
-		files)
+	if (!req.files)
 		return res.status(400).send('No files were uploaded.');
 	
 	var voucherFile = req.files.file;
 
 	var vouchers = [];
+	var results = [];
 		
 	csv
 	 .fromString(voucherFile.data.toString(), {
@@ -18,25 +27,32 @@ exports.post = function (req, res) {
 		 ignoreEmpty: true
 	 })
 	 .on("data", function(data){
-		 var chunk_size = 100;
-		 var results = [];
-
-		 if (data.length> 100) {	 
-			while (data.length) {
-				data['_id'] = new mongoose.Types.ObjectId();
-				results.push(data.splice(0, chunk_size));
-			}
-		 }else {
-			data['_id'] = new mongoose.Types.ObjectId();			
-			results= data;
-		 }		 
-		 vouchers.push(results);
+		const chunk_size = 1000;
+		data['_id'] = new mongoose.Types.ObjectId();
+		results.push(data);		
+		
+		if(results.length % chunk_size == 0){
+			emitter.emit('a', results);
+			results = [];
+			vouchers = [];
+		} else { 
+		// if (count > chunk_size){
+		// 	console.log("Entered else if with count", count);				
+			
+		// 	while (results.em !== null || results !== '') {
+		// 	console.log("Entered while wit results", results.length);				
+			vouchers.push(results);					
+			console.log('VoucherS after:        ',vouchers.length);
+		}		 
 	 })
 	 .on("end", function(){
-		 Voucher.create(vouchers, function(err, documents) {
+		console.log("Entered end");
+		if(vouchers.length > 0){
+		Voucher.create(vouchers, function(err, documents){
 			if (err) throw err;
-			
-			res.send(vouchers.length + ' vouchers have been successfully uploaded.');
-		 });
+		});
+		}
+
+		res.send(' vouchers have been successfully uploaded.');
 	 });
 };
