@@ -17,7 +17,6 @@ exports.post = function (req, res) {
 		return res.status(400).send('No files were uploaded.');
 	
 	var voucherFile = req.files.file;
-
 	var vouchers = [];
 	var results = [];
 		
@@ -30,29 +29,27 @@ exports.post = function (req, res) {
 		const chunk_size = 1000;
 		data['_id'] = new mongoose.Types.ObjectId();
 		results.push(data);		
-		
-		if(results.length % chunk_size == 0){
-			emitter.emit('a', results);
-			results = [];
-			vouchers = [];
-		} else { 
-		// if (count > chunk_size){
-		// 	console.log("Entered else if with count", count);				
-			
-		// 	while (results.em !== null || results !== '') {
-		// 	console.log("Entered while wit results", results.length);				
-			vouchers.push(results);					
-			console.log('VoucherS after:        ',vouchers.length);
-		}		 
+		if(results && results.length> 0){
+			if(results.length % chunk_size === 0){
+				emitter.emit('a', results);
+				results = [];
+				vouchers = [];
+			} else { 
+			// if (count > chunk_size){
+			// 	console.log("Entered else if with count", count);				
+				
+			// 	while (results.em !== null || results !== '') {
+			// 	console.log("Entered while wit results", results.length);				
+			}		 
+		} else {}
 	 })
 	 .on("end", function(){
 		console.log("Entered end");
-		if(vouchers.length > 0){
-		Voucher.create(vouchers, function(err, documents){
-			if (err) throw err;
-		});
-		}
-
+		if(results && results.length > 0){
+			Voucher.create(results, function(err, documents){
+				if (err) throw err;
+			});
+		} else {}
 		res.send(' vouchers have been successfully uploaded.');
 	 });
 };
